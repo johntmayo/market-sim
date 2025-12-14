@@ -67,28 +67,40 @@
             position: absolute;
             bottom: 1rem;
             right: 1rem;
-            width: 80px;
-            height: 80px;
+            width: 120px;
+            height: 120px;
             z-index: 1;
-            opacity: 0.8;
-            animation: float 3s ease-in-out infinite;
+            opacity: 0.9;
+            animation: float 3s ease-in-out infinite, wiggle 2s ease-in-out infinite;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+
+        .pangolin:hover {
+            transform: scale(1.1);
         }
 
         @keyframes float {
             0%, 100% { transform: translateY(0px) rotate(0deg); }
-            50% { transform: translateY(-10px) rotate(5deg); }
+            50% { transform: translateY(-15px) rotate(3deg); }
+        }
+
+        @keyframes wiggle {
+            0%, 100% { transform: rotate(0deg); }
+            25% { transform: rotate(-2deg); }
+            75% { transform: rotate(2deg); }
         }
 
         .pangolin svg {
             width: 100%;
             height: 100%;
-            filter: drop-shadow(0 0 10px rgba(0, 255, 255, 0.3));
+            filter: drop-shadow(0 0 15px rgba(0, 255, 255, 0.5)) drop-shadow(0 0 25px rgba(255, 170, 0, 0.3));
         }
 
         @media (max-width: 600px) {
             .pangolin {
-                width: 60px;
-                height: 60px;
+                width: 80px;
+                height: 80px;
                 bottom: 0.5rem;
                 right: 0.5rem;
             }
@@ -108,29 +120,62 @@
         }
 
         .stat-card {
-            background: #1a1a1a;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
             border: 2px solid #333;
-            border-radius: 8px;
+            border-radius: 12px;
             padding: 1rem;
             text-align: center;
             position: relative;
             overflow: hidden;
             transition: all 0.3s;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, #333, transparent);
+            opacity: 0.5;
         }
 
         .stat-card.good {
             border-color: #00ff88;
-            background: #1a2a1a;
+            background: linear-gradient(135deg, #1a2a1a 0%, #1a3a2a 100%);
+            box-shadow: 0 4px 12px rgba(0, 255, 136, 0.3);
+        }
+
+        .stat-card.good::before {
+            background: linear-gradient(90deg, transparent, #00ff88, transparent);
         }
 
         .stat-card.warning {
             border-color: #ffaa00;
-            background: #2a2a1a;
+            background: linear-gradient(135deg, #2a2a1a 0%, #3a2a1a 100%);
+            box-shadow: 0 4px 12px rgba(255, 170, 0, 0.3);
+        }
+
+        .stat-card.warning::before {
+            background: linear-gradient(90deg, transparent, #ffaa00, transparent);
         }
 
         .stat-card.danger {
             border-color: #ff4444;
-            background: #2a1a1a;
+            background: linear-gradient(135deg, #2a1a1a 0%, #3a1a1a 100%);
+            box-shadow: 0 4px 12px rgba(255, 68, 68, 0.4);
+            animation: dangerPulse 2s ease-in-out infinite;
+        }
+
+        .stat-card.danger::before {
+            background: linear-gradient(90deg, transparent, #ff4444, transparent);
+        }
+
+        @keyframes dangerPulse {
+            0%, 100% { box-shadow: 0 4px 12px rgba(255, 68, 68, 0.4); }
+            50% { box-shadow: 0 4px 20px rgba(255, 68, 68, 0.6); }
         }
 
         .stat-card.pulse {
@@ -157,6 +202,14 @@
             text-transform: uppercase;
             letter-spacing: 1px;
             margin-bottom: 0.25rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.3rem;
+        }
+
+        .stat-icon {
+            font-size: 1rem;
         }
 
         .stat-value {
@@ -171,35 +224,58 @@
         .stat-value.danger { color: #ff0000; }
 
         .warning-box {
-            background: #2a1a00;
+            background: linear-gradient(135deg, #2a1a00 0%, #3a2a00 100%);
             border: 2px solid #ff8800;
-            border-radius: 8px;
+            border-radius: 10px;
             padding: 0.75rem;
             margin-bottom: 1.5rem;
             text-align: center;
             font-size: 0.9rem;
             color: #ffaa00;
+            box-shadow: 0 4px 8px rgba(255, 136, 0, 0.2);
+            position: relative;
         }
 
         .warning-box.unstable {
-            background: #3a2a00;
+            background: linear-gradient(135deg, #3a2a00 0%, #4a3a00 100%);
             border-color: #ffaa00;
             color: #ffcc66;
+            box-shadow: 0 4px 12px rgba(255, 170, 0, 0.3);
         }
 
         .warning-box.volatile {
-            background: #3a0000;
+            background: linear-gradient(135deg, #3a0000 0%, #4a0000 100%);
             border-color: #ff0000;
             color: #ff6666;
             animation: pulse 1s infinite;
+            box-shadow: 0 4px 15px rgba(255, 0, 0, 0.4);
         }
 
         .win-condition-box {
-            background: #001a1a;
+            background: linear-gradient(135deg, #001a1a 0%, #002a2a 100%);
             border: 2px solid #00ffff;
-            border-radius: 8px;
+            border-radius: 12px;
             padding: 1rem;
             margin-bottom: 1.5rem;
+            box-shadow: 0 4px 12px rgba(0, 255, 255, 0.2), inset 0 1px 0 rgba(0, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .win-condition-box::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #00ffff, transparent);
+            animation: shimmer 3s ease-in-out infinite;
+        }
+
+        @keyframes shimmer {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
         }
 
         .win-condition-box h3 {
@@ -269,32 +345,53 @@
             flex: 1;
             min-width: 100px;
             padding: 1rem;
-            background: #2a2a2a;
+            background: linear-gradient(135deg, #2a2a2a 0%, #1a1a1a 100%);
             border: 2px solid #444;
-            border-radius: 8px;
+            border-radius: 10px;
             color: #e0e0e0;
             font-size: 0.9rem;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.3s;
             font-weight: 500;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .decision-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0, 255, 255, 0.1), transparent);
+            transition: left 0.5s;
+        }
+
+        .decision-btn:hover::before {
+            left: 100%;
         }
 
         .decision-btn:hover {
-            background: #3a3a3a;
+            background: linear-gradient(135deg, #3a3a3a 0%, #2a2a2a 100%);
             border-color: #00ffff;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 255, 255, 0.2);
         }
 
         .decision-btn.active {
-            background: #003333;
+            background: linear-gradient(135deg, #003333 0%, #001a1a 100%);
             border-color: #00ffff;
             color: #00ffff;
-            box-shadow: 0 0 15px rgba(0, 255, 255, 0.3);
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.4), 0 4px 8px rgba(0, 255, 255, 0.2);
+            transform: scale(1.02);
         }
 
         .run-day-btn {
             width: 100%;
             padding: 1.5rem;
-            background: linear-gradient(135deg, #0066ff 0%, #00ffff 100%);
+            background: linear-gradient(135deg, #0066ff 0%, #00ffff 50%, #00ff88 100%);
             border: none;
             border-radius: 12px;
             color: #000;
@@ -302,18 +399,38 @@
             font-weight: bold;
             cursor: pointer;
             margin-bottom: 1.5rem;
-            transition: all 0.2s;
+            transition: all 0.3s;
             text-transform: uppercase;
             letter-spacing: 2px;
+            box-shadow: 0 4px 15px rgba(0, 255, 255, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .run-day-btn::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transform: rotate(45deg);
+            transition: all 0.5s;
+        }
+
+        .run-day-btn:hover::before {
+            left: 100%;
+            top: 100%;
         }
 
         .run-day-btn:hover {
-            transform: scale(1.02);
-            box-shadow: 0 0 30px rgba(0, 255, 255, 0.5);
+            transform: scale(1.03) translateY(-2px);
+            box-shadow: 0 6px 25px rgba(0, 255, 255, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.4);
         }
 
         .run-day-btn:active {
-            transform: scale(0.98);
+            transform: scale(0.98) translateY(0);
         }
 
         .run-day-btn:disabled {
@@ -398,12 +515,13 @@
         }
 
         .breakdown {
-            background: #1a1a1a;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2a2a1a 100%);
             border: 2px solid #333;
-            border-radius: 8px;
+            border-radius: 12px;
             padding: 1rem;
             margin-bottom: 1.5rem;
             display: none;
+            box-shadow: 0 4px 12px rgba(0, 255, 255, 0.1);
         }
 
         .breakdown.show {
@@ -445,19 +563,28 @@
         .breakdown-value.negative { color: #ff4444; }
 
         .log-container {
-            background: #1a1a1a;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2a1a1a 100%);
             border: 2px solid #333;
-            border-radius: 8px;
+            border-radius: 12px;
             padding: 1rem;
             margin-bottom: 1.5rem;
             max-height: 300px;
             overflow-y: auto;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.05);
         }
 
         .log-container h3 {
             font-size: 1rem;
             margin-bottom: 0.75rem;
             color: #00ffff;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .log-container h3::before {
+            content: '📋';
+            font-size: 1.2rem;
         }
 
         .log-entry {
@@ -693,6 +820,38 @@
             background: #2a2a2a;
         }
 
+        .music-control {
+            position: fixed;
+            bottom: 1rem;
+            right: 1rem;
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #2a2a2a 0%, #1a1a1a 100%);
+            border: 2px solid #00ffff;
+            border-radius: 50%;
+            color: #00ffff;
+            font-size: 1.5rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            transition: all 0.3s;
+            box-shadow: 0 4px 12px rgba(0, 255, 255, 0.3);
+        }
+
+        .music-control:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(0, 255, 255, 0.5);
+            background: linear-gradient(135deg, #003333 0%, #001a1a 100%);
+        }
+
+        .music-control.muted {
+            opacity: 0.5;
+            border-color: #666;
+            color: #666;
+        }
+
         .new-run-btn {
             width: 100%;
             padding: 1rem;
@@ -728,34 +887,74 @@
     </style>
 </head>
 <body>
+    <!-- Background Music -->
+    <audio id="bgMusic" loop>
+        <source src="Sao Meo Orchestral Mix - Doug Maxwell_ Zac Zinger.mp3" type="audio/mpeg">
+    </audio>
+
+    <!-- Music Control Button -->
+    <button class="music-control" id="musicControl" onclick="toggleMusic()" title="Toggle Music">
+        <span id="musicIcon">🎵</span>
+    </button>
+
     <div class="cover">
         <h1>WUHAN WET MARKET</h1>
         <p>Port City • Turn-Based Management</p>
-        <div class="pangolin">
+        <div class="pangolin" onclick="pangolinClick()">
             <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-                <!-- Pangolin body -->
-                <ellipse cx="50" cy="60" rx="35" ry="25" fill="#8B7355" stroke="#6B5D45" stroke-width="2"/>
-                <!-- Scales pattern -->
-                <ellipse cx="40" cy="55" rx="8" ry="6" fill="#A0826D"/>
-                <ellipse cx="50" cy="52" rx="8" ry="6" fill="#A0826D"/>
-                <ellipse cx="60" cy="55" rx="8" ry="6" fill="#A0826D"/>
-                <ellipse cx="45" cy="65" rx="8" ry="6" fill="#A0826D"/>
-                <ellipse cx="55" cy="65" rx="8" ry="6" fill="#A0826D"/>
-                <!-- Head -->
-                <ellipse cx="50" cy="35" rx="20" ry="18" fill="#8B7355" stroke="#6B5D45" stroke-width="2"/>
-                <!-- Snout -->
-                <ellipse cx="50" cy="28" rx="8" ry="6" fill="#6B5D45"/>
-                <!-- Eyes -->
-                <circle cx="45" cy="32" r="2" fill="#00ffff"/>
-                <circle cx="55" cy="32" r="2" fill="#00ffff"/>
-                <!-- Smile -->
-                <path d="M 45 38 Q 50 42 55 38" stroke="#6B5D45" stroke-width="1.5" fill="none" stroke-linecap="round"/>
-                <!-- Tail -->
-                <ellipse cx="20" cy="70" rx="12" ry="8" fill="#8B7355" stroke="#6B5D45" stroke-width="2"/>
-                <ellipse cx="15" cy="75" rx="8" ry="5" fill="#8B7355"/>
-                <!-- Legs -->
-                <ellipse cx="35" cy="80" rx="5" ry="8" fill="#6B5D45"/>
-                <ellipse cx="65" cy="80" rx="5" ry="8" fill="#6B5D45"/>
+                <!-- Tail with scales -->
+                <ellipse cx="18" cy="68" rx="14" ry="10" fill="#9B7A5F" stroke="#7A5F47" stroke-width="1.5"/>
+                <ellipse cx="12" cy="73" rx="10" ry="7" fill="#9B7A5F"/>
+                <!-- Scales on tail -->
+                <ellipse cx="15" cy="66" rx="4" ry="3" fill="#B8957A" opacity="0.6"/>
+                <ellipse cx="10" cy="71" rx="4" ry="3" fill="#B8957A" opacity="0.6"/>
+                
+                <!-- Body with detailed scales -->
+                <ellipse cx="50" cy="58" rx="38" ry="28" fill="#9B7A5F" stroke="#7A5F47" stroke-width="2"/>
+                <!-- Scale pattern on body -->
+                <ellipse cx="38" cy="52" rx="9" ry="7" fill="#B8957A" opacity="0.7"/>
+                <ellipse cx="50" cy="48" rx="9" ry="7" fill="#B8957A" opacity="0.7"/>
+                <ellipse cx="62" cy="52" rx="9" ry="7" fill="#B8957A" opacity="0.7"/>
+                <ellipse cx="43" cy="62" rx="9" ry="7" fill="#B8957A" opacity="0.7"/>
+                <ellipse cx="57" cy="62" rx="9" ry="7" fill="#B8957A" opacity="0.7"/>
+                <ellipse cx="50" cy="68" rx="9" ry="7" fill="#B8957A" opacity="0.7"/>
+                
+                <!-- Head - bigger and rounder -->
+                <ellipse cx="50" cy="32" rx="22" ry="20" fill="#9B7A5F" stroke="#7A5F47" stroke-width="2"/>
+                <!-- Blush cheeks -->
+                <ellipse cx="38" cy="38" rx="6" ry="5" fill="#FFB6C1" opacity="0.6"/>
+                <ellipse cx="62" cy="38" rx="6" ry="5" fill="#FFB6C1" opacity="0.6"/>
+                
+                <!-- Big adorable eyes -->
+                <circle cx="44" cy="30" r="5" fill="#FFFFFF"/>
+                <circle cx="56" cy="30" r="5" fill="#FFFFFF"/>
+                <circle cx="44" cy="30" r="3.5" fill="#00DDFF"/>
+                <circle cx="56" cy="30" r="3.5" fill="#00DDFF"/>
+                <circle cx="45" cy="29" r="1.5" fill="#000000"/>
+                <circle cx="57" cy="29" r="1.5" fill="#000000"/>
+                <!-- Eye shine -->
+                <circle cx="45.5" cy="28.5" r="0.8" fill="#FFFFFF"/>
+                <circle cx="57.5" cy="28.5" r="0.8" fill="#FFFFFF"/>
+                
+                <!-- Cute snout -->
+                <ellipse cx="50" cy="42" rx="7" ry="5" fill="#7A5F47"/>
+                <ellipse cx="50" cy="40" rx="4" ry="3" fill="#5A4535"/>
+                <!-- Nose -->
+                <ellipse cx="50" cy="38" rx="2" ry="1.5" fill="#000000"/>
+                
+                <!-- Happy smile -->
+                <path d="M 42 45 Q 50 50 58 45" stroke="#7A5F47" stroke-width="2" fill="none" stroke-linecap="round"/>
+                
+                <!-- Cute little legs -->
+                <ellipse cx="32" cy="78" rx="6" ry="10" fill="#7A5F47"/>
+                <ellipse cx="68" cy="78" rx="6" ry="10" fill="#7A5F47"/>
+                <!-- Feet -->
+                <ellipse cx="32" cy="85" rx="4" ry="3" fill="#5A4535"/>
+                <ellipse cx="68" cy="85" rx="4" ry="3" fill="#5A4535"/>
+                
+                <!-- Front paws (holding something cute) -->
+                <ellipse cx="28" cy="50" rx="5" ry="4" fill="#7A5F47"/>
+                <ellipse cx="72" cy="50" rx="5" ry="4" fill="#7A5F47"/>
             </svg>
         </div>
     </div>
@@ -766,23 +965,23 @@
 
         <div class="stats-grid">
             <div class="stat-card" id="stat-day">
-                <div class="stat-label">Day</div>
+                <div class="stat-label"><span class="stat-icon">📅</span> Day</div>
                 <div class="stat-value" id="value-day">1</div>
             </div>
             <div class="stat-card" id="stat-cash">
-                <div class="stat-label">Cash</div>
+                <div class="stat-label"><span class="stat-icon">💰</span> Cash</div>
                 <div class="stat-value" id="value-cash">1000</div>
             </div>
             <div class="stat-card" id="stat-reputation">
-                <div class="stat-label">Reputation</div>
+                <div class="stat-label"><span class="stat-icon">⭐</span> Reputation</div>
                 <div class="stat-value" id="value-reputation">50</div>
             </div>
             <div class="stat-card" id="stat-scrutiny">
-                <div class="stat-label">Scrutiny</div>
+                <div class="stat-label"><span class="stat-icon">👁️</span> Scrutiny</div>
                 <div class="stat-value" id="value-scrutiny">10</div>
             </div>
             <div class="stat-card" id="stat-diseaseRisk">
-                <div class="stat-label">Risk Status</div>
+                <div class="stat-label"><span class="stat-icon">⚠️</span> Risk Status</div>
                 <div class="stat-value warning" id="value-diseaseRisk">Contained</div>
             </div>
         </div>
@@ -1624,6 +1823,70 @@ Path: ${gameState.forkChoice ? (gameState.forkChoice === 'reform' ? 'Reform' : '
             if (runBtn) runBtn.disabled = false;
             decisionBtns.forEach(btn => btn.disabled = false);
             if (newRunBtn) newRunBtn.disabled = false;
+            // Start music after user interaction
+            startMusic();
+        }
+
+        function pangolinClick() {
+            const pangolin = document.querySelector('.pangolin');
+            pangolin.style.animation = 'none';
+            setTimeout(() => {
+                pangolin.style.animation = 'float 3s ease-in-out infinite, wiggle 2s ease-in-out infinite';
+            }, 10);
+            
+            // Add cute messages
+            const messages = [
+                '🦎 *happy pangolin noises*',
+                '🦎 You\'re doing great!',
+                '🦎 Keep going!',
+                '🦎 *scurries happily*',
+                '🦎 Stay safe out there!'
+            ];
+            const message = messages[Math.floor(Math.random() * messages.length)];
+            addLogEntry(message, 'event');
+        }
+
+        function toggleMusic() {
+            const music = document.getElementById('bgMusic');
+            const control = document.getElementById('musicControl');
+            const icon = document.getElementById('musicIcon');
+            
+            // Set volume if not set
+            if (music.volume === 1) {
+                music.volume = 0.5;
+            }
+            
+            if (music.paused) {
+                music.play().catch(e => {
+                    console.log('Play prevented:', e);
+                });
+                control.classList.remove('muted');
+                icon.textContent = '🎵';
+                localStorage.setItem('wuhanWetMarketMusic', 'on');
+            } else {
+                music.pause();
+                control.classList.add('muted');
+                icon.textContent = '🔇';
+                localStorage.setItem('wuhanWetMarketMusic', 'off');
+            }
+        }
+
+        function startMusic() {
+            const music = document.getElementById('bgMusic');
+            const musicPref = localStorage.getItem('wuhanWetMarketMusic');
+            
+            // Only autoplay if user hasn't muted it before
+            if (musicPref !== 'off') {
+                music.volume = 0.5; // Set volume to 50%
+                music.play().catch(e => {
+                    // Autoplay was prevented, that's okay
+                    console.log('Music autoplay prevented, user can click to play');
+                });
+            } else {
+                // User previously muted, show muted state
+                document.getElementById('musicControl').classList.add('muted');
+                document.getElementById('musicIcon').textContent = '🔇';
+            }
         }
 
         // Initialize
