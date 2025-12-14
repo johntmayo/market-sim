@@ -1,0 +1,1518 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wuhan Wet Market</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: #0a0a0a;
+            color: #e0e0e0;
+            min-height: 100vh;
+            padding: 0;
+            overflow-x: hidden;
+        }
+
+        .cover {
+            background: linear-gradient(135deg, #1a0033 0%, #330066 50%, #000000 100%);
+            padding: 3rem 1.5rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cover::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: repeating-linear-gradient(
+                45deg,
+                transparent,
+                transparent 10px,
+                rgba(0, 255, 255, 0.03) 10px,
+                rgba(0, 255, 255, 0.03) 20px
+            );
+        }
+
+        .cover h1 {
+            font-size: 2.5rem;
+            font-weight: 900;
+            color: #00ffff;
+            text-shadow: 0 0 20px rgba(0, 255, 255, 0.5), 0 0 40px rgba(0, 255, 255, 0.3);
+            margin-bottom: 0.5rem;
+            position: relative;
+            z-index: 1;
+            letter-spacing: 2px;
+        }
+
+        .cover p {
+            font-size: 1rem;
+            color: #cccccc;
+            position: relative;
+            z-index: 1;
+            font-style: italic;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 1rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .stat-card {
+            background: #1a1a1a;
+            border: 2px solid #333;
+            border-radius: 8px;
+            padding: 1rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card.pulse {
+            animation: pulse 0.5s ease-in-out;
+        }
+
+        .stat-card.flash {
+            animation: flash 0.3s ease-in-out;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        @keyframes flash {
+            0%, 100% { background: #1a1a1a; }
+            50% { background: #2a4a2a; }
+        }
+
+        .stat-label {
+            font-size: 0.75rem;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #00ffff;
+        }
+
+        .stat-value.positive { color: #00ff88; }
+        .stat-value.negative { color: #ff4444; }
+        .stat-value.warning { color: #ffaa00; }
+        .stat-value.danger { color: #ff0000; }
+
+        .warning-box {
+            background: #2a1a00;
+            border: 2px solid #ff8800;
+            border-radius: 8px;
+            padding: 0.75rem;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            font-size: 0.9rem;
+            color: #ffaa00;
+        }
+
+        .warning-box.unstable {
+            background: #3a2a00;
+            border-color: #ffaa00;
+            color: #ffcc66;
+        }
+
+        .warning-box.volatile {
+            background: #3a0000;
+            border-color: #ff0000;
+            color: #ff6666;
+            animation: pulse 1s infinite;
+        }
+
+        .win-condition-box {
+            background: #001a1a;
+            border: 2px solid #00ffff;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .win-condition-box h3 {
+            font-size: 1rem;
+            color: #00ffff;
+            margin-bottom: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .win-condition-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #003333;
+            font-size: 0.9rem;
+        }
+
+        .win-condition-item:last-child {
+            border-bottom: none;
+        }
+
+        .win-condition-label {
+            color: #aaa;
+        }
+
+        .win-condition-status {
+            font-weight: bold;
+        }
+
+        .win-condition-status.met {
+            color: #00ff88;
+        }
+
+        .win-condition-status.not-met {
+            color: #ff6666;
+        }
+
+        .win-condition-status.progress {
+            color: #ffaa00;
+        }
+
+        .decisions {
+            margin-bottom: 1.5rem;
+        }
+
+        .decision-group {
+            margin-bottom: 1.25rem;
+        }
+
+        .decision-label {
+            font-size: 0.9rem;
+            color: #aaa;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .decision-buttons {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .decision-btn {
+            flex: 1;
+            min-width: 100px;
+            padding: 1rem;
+            background: #2a2a2a;
+            border: 2px solid #444;
+            border-radius: 8px;
+            color: #e0e0e0;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+
+        .decision-btn:hover {
+            background: #3a3a3a;
+            border-color: #00ffff;
+        }
+
+        .decision-btn.active {
+            background: #003333;
+            border-color: #00ffff;
+            color: #00ffff;
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.3);
+        }
+
+        .run-day-btn {
+            width: 100%;
+            padding: 1.5rem;
+            background: linear-gradient(135deg, #0066ff 0%, #00ffff 100%);
+            border: none;
+            border-radius: 12px;
+            color: #000;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            margin-bottom: 1.5rem;
+            transition: all 0.2s;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .run-day-btn:hover {
+            transform: scale(1.02);
+            box-shadow: 0 0 30px rgba(0, 255, 255, 0.5);
+        }
+
+        .run-day-btn:active {
+            transform: scale(0.98);
+        }
+
+        .run-day-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .fork-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.95);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            padding: 2rem;
+        }
+
+        .fork-overlay.show {
+            display: flex;
+        }
+
+        .fork-content {
+            background: #1a1a1a;
+            border: 3px solid #00ffff;
+            border-radius: 12px;
+            padding: 2rem;
+            max-width: 500px;
+            width: 100%;
+        }
+
+        .fork-content h2 {
+            font-size: 1.8rem;
+            color: #00ffff;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .fork-content p {
+            font-size: 1rem;
+            color: #ccc;
+            margin-bottom: 1.5rem;
+            line-height: 1.6;
+        }
+
+        .fork-options {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .fork-btn {
+            padding: 1.5rem;
+            background: #2a2a2a;
+            border: 2px solid #00ffff;
+            border-radius: 8px;
+            color: #00ffff;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: left;
+        }
+
+        .fork-btn:hover {
+            background: #003333;
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.3);
+        }
+
+        .fork-btn-title {
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+            color: #00ffff;
+        }
+
+        .fork-btn-desc {
+            font-size: 0.9rem;
+            color: #aaa;
+        }
+
+        .breakdown {
+            background: #1a1a1a;
+            border: 2px solid #333;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+            display: none;
+        }
+
+        .breakdown.show {
+            display: block;
+            animation: fadeIn 0.3s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .breakdown h3 {
+            font-size: 1rem;
+            margin-bottom: 0.75rem;
+            color: #00ffff;
+        }
+
+        .breakdown-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #333;
+        }
+
+        .breakdown-item:last-child {
+            border-bottom: none;
+        }
+
+        .breakdown-label {
+            color: #aaa;
+        }
+
+        .breakdown-value {
+            font-weight: bold;
+        }
+
+        .breakdown-value.positive { color: #00ff88; }
+        .breakdown-value.negative { color: #ff4444; }
+
+        .log-container {
+            background: #1a1a1a;
+            border: 2px solid #333;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .log-container h3 {
+            font-size: 1rem;
+            margin-bottom: 0.75rem;
+            color: #00ffff;
+        }
+
+        .log-entry {
+            font-size: 0.85rem;
+            color: #ccc;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #2a2a2a;
+            line-height: 1.4;
+        }
+
+        .log-entry:last-child {
+            border-bottom: none;
+        }
+
+        .log-entry.day {
+            color: #00ffff;
+            font-weight: bold;
+        }
+
+        .log-entry.event {
+            color: #ffaa00;
+            font-style: italic;
+        }
+
+        .log-entry.stat-change {
+            color: #aaa;
+            font-size: 0.8rem;
+        }
+
+        .intro-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.95);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            padding: 2rem;
+            overflow-y: auto;
+        }
+
+        .intro-overlay.show {
+            display: flex;
+        }
+
+        .intro-content {
+            background: #1a1a1a;
+            border: 3px solid #00ffff;
+            border-radius: 12px;
+            padding: 2rem;
+            max-width: 600px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .intro-content h2 {
+            font-size: 2rem;
+            color: #00ffff;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .intro-content h3 {
+            font-size: 1.2rem;
+            color: #00ffff;
+            margin-top: 1.5rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .intro-content p {
+            font-size: 1rem;
+            color: #ccc;
+            margin-bottom: 1rem;
+            line-height: 1.6;
+        }
+
+        .intro-content ul {
+            margin-left: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .intro-content li {
+            font-size: 0.95rem;
+            color: #ccc;
+            margin-bottom: 0.5rem;
+            line-height: 1.5;
+        }
+
+        .intro-content .highlight {
+            color: #00ffff;
+            font-weight: bold;
+        }
+
+        .intro-content .warning-text {
+            color: #ffaa00;
+        }
+
+        .intro-close-btn {
+            width: 100%;
+            padding: 1rem;
+            background: linear-gradient(135deg, #0066ff 0%, #00ffff 100%);
+            border: none;
+            border-radius: 8px;
+            color: #000;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 1.5rem;
+            transition: all 0.2s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .intro-close-btn:hover {
+            transform: scale(1.02);
+            box-shadow: 0 0 30px rgba(0, 255, 255, 0.5);
+        }
+
+        .how-to-play-btn {
+            width: 100%;
+            padding: 0.75rem;
+            background: #2a2a2a;
+            border: 2px solid #666;
+            border-radius: 8px;
+            color: #ccc;
+            font-size: 0.9rem;
+            font-weight: bold;
+            cursor: pointer;
+            margin-bottom: 1rem;
+            transition: all 0.2s;
+        }
+
+        .how-to-play-btn:hover {
+            background: #3a3a3a;
+            border-color: #888;
+        }
+
+        .game-over {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.95);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 2rem;
+        }
+
+        .game-over.show {
+            display: flex;
+        }
+
+        .game-over-content {
+            background: #1a1a1a;
+            border: 3px solid #00ffff;
+            border-radius: 12px;
+            padding: 2rem;
+            max-width: 500px;
+            width: 100%;
+            text-align: center;
+        }
+
+        .game-over-content h2 {
+            font-size: 2rem;
+            color: #00ffff;
+            margin-bottom: 1rem;
+        }
+
+        .game-over-content p {
+            font-size: 1.1rem;
+            color: #ccc;
+            margin-bottom: 1rem;
+            line-height: 1.6;
+        }
+
+        .game-over-content .ending-title {
+            font-size: 1.5rem;
+            color: #ffaa00;
+            font-weight: bold;
+            margin: 1rem 0;
+            padding: 1rem;
+            background: #2a1a00;
+            border-radius: 8px;
+        }
+
+        .game-over-content .epilogue {
+            font-size: 0.95rem;
+            color: #aaa;
+            font-style: italic;
+            margin-top: 1rem;
+            line-height: 1.5;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .action-btn {
+            flex: 1;
+            padding: 1rem;
+            background: #2a2a2a;
+            border: 2px solid #00ffff;
+            border-radius: 8px;
+            color: #00ffff;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .action-btn:hover {
+            background: #003333;
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.3);
+        }
+
+        .action-btn.secondary {
+            border-color: #888;
+            color: #888;
+        }
+
+        .action-btn.secondary:hover {
+            border-color: #aaa;
+            color: #aaa;
+            background: #2a2a2a;
+        }
+
+        .new-run-btn {
+            width: 100%;
+            padding: 1rem;
+            background: #2a2a2a;
+            border: 2px solid #666;
+            border-radius: 8px;
+            color: #ccc;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            margin-bottom: 1rem;
+            transition: all 0.2s;
+        }
+
+        .new-run-btn:hover {
+            background: #3a3a3a;
+            border-color: #888;
+        }
+
+        @media (min-width: 600px) {
+            .cover h1 {
+                font-size: 3.5rem;
+            }
+
+            .cover p {
+                font-size: 1.2rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="cover">
+        <h1>WUHAN WET MARKET</h1>
+        <p>Port City • Turn-Based Management</p>
+    </div>
+
+    <div class="container">
+        <button class="how-to-play-btn" onclick="showIntro()">How to Play</button>
+        <button class="new-run-btn" onclick="newRun()">New Run</button>
+
+        <div class="stats-grid">
+            <div class="stat-card" id="stat-day">
+                <div class="stat-label">Day</div>
+                <div class="stat-value" id="value-day">1</div>
+            </div>
+            <div class="stat-card" id="stat-cash">
+                <div class="stat-label">Cash</div>
+                <div class="stat-value" id="value-cash">1000</div>
+            </div>
+            <div class="stat-card" id="stat-reputation">
+                <div class="stat-label">Reputation</div>
+                <div class="stat-value" id="value-reputation">50</div>
+            </div>
+            <div class="stat-card" id="stat-scrutiny">
+                <div class="stat-label">Scrutiny</div>
+                <div class="stat-value" id="value-scrutiny">10</div>
+            </div>
+            <div class="stat-card" id="stat-diseaseRisk">
+                <div class="stat-label">Risk Status</div>
+                <div class="stat-value warning" id="value-diseaseRisk">Contained</div>
+            </div>
+        </div>
+
+        <div class="warning-box" id="warning-box">
+            Risk status: Contained. Operations normal.
+        </div>
+
+        <div class="win-condition-box">
+            <h3>Win Conditions</h3>
+            <div class="win-condition-item">
+                <span class="win-condition-label">Reach Day 15</span>
+                <span class="win-condition-status" id="win-day-status">Day 1 / 15</span>
+            </div>
+            <div class="win-condition-item">
+                <span class="win-condition-label">Accumulate $10,000 Cash</span>
+                <span class="win-condition-status" id="win-cash-status">$1,000 / $10,000</span>
+            </div>
+            <div class="win-condition-item">
+                <span class="win-condition-label">Keep Risk Below Critical</span>
+                <span class="win-condition-status" id="win-risk-status">Contained</span>
+            </div>
+        </div>
+
+        <div class="decisions">
+            <div class="decision-group">
+                <div class="decision-label">Stock Level</div>
+                <div class="decision-buttons">
+                    <button class="decision-btn" data-group="stock" data-value="low" onclick="selectDecision('stock', 'low')">Low</button>
+                    <button class="decision-btn active" data-group="stock" data-value="medium" onclick="selectDecision('stock', 'medium')">Medium</button>
+                    <button class="decision-btn" data-group="stock" data-value="high" onclick="selectDecision('stock', 'high')">High</button>
+                </div>
+            </div>
+
+            <div class="decision-group">
+                <div class="decision-label">Sanitation Spend</div>
+                <div class="decision-buttons">
+                    <button class="decision-btn" data-group="sanitation" data-value="cheap" onclick="selectDecision('sanitation', 'cheap')">Cheap</button>
+                    <button class="decision-btn active" data-group="sanitation" data-value="standard" onclick="selectDecision('sanitation', 'standard')">Standard</button>
+                    <button class="decision-btn" data-group="sanitation" data-value="strict" onclick="selectDecision('sanitation', 'strict')">Strict</button>
+                </div>
+            </div>
+
+            <div class="decision-group">
+                <div class="decision-label">Market Posture</div>
+                <div class="decision-buttons">
+                    <button class="decision-btn" data-group="posture" data-value="profit" onclick="selectDecision('posture', 'profit')">Profit-first</button>
+                    <button class="decision-btn active" data-group="posture" data-value="balanced" onclick="selectDecision('posture', 'balanced')">Balanced</button>
+                    <button class="decision-btn" data-group="posture" data-value="safety" onclick="selectDecision('posture', 'safety')">Safety-first</button>
+                </div>
+            </div>
+        </div>
+
+        <button class="run-day-btn" onclick="runDay()">Run Day</button>
+
+        <div class="breakdown" id="breakdown">
+            <h3>Day Results</h3>
+            <div class="breakdown-item">
+                <span class="breakdown-label">Revenue</span>
+                <span class="breakdown-value positive" id="breakdown-revenue">+0</span>
+            </div>
+            <div class="breakdown-item">
+                <span class="breakdown-label">Costs</span>
+                <span class="breakdown-value negative" id="breakdown-costs">-0</span>
+            </div>
+            <div class="breakdown-item">
+                <span class="breakdown-label">Net Change</span>
+                <span class="breakdown-value" id="breakdown-net">0</span>
+            </div>
+            <div class="breakdown-item">
+                <span class="breakdown-label">Reputation Change</span>
+                <span class="breakdown-value" id="breakdown-reputation">0</span>
+            </div>
+            <div class="breakdown-item">
+                <span class="breakdown-label">Scrutiny Change</span>
+                <span class="breakdown-value" id="breakdown-scrutiny">0</span>
+            </div>
+        </div>
+
+        <div class="log-container">
+            <h3>Market Log</h3>
+            <div id="log-entries"></div>
+        </div>
+    </div>
+
+    <div class="fork-overlay" id="fork-overlay">
+        <div class="fork-content">
+            <h2>Critical Decision</h2>
+            <p>The market has reached a turning point. You must choose a path that will define your future operations.</p>
+            <div class="fork-options">
+                <button class="fork-btn" onclick="chooseFork('reform')">
+                    <div class="fork-btn-title">Reform Path</div>
+                    <div class="fork-btn-desc">Lower profit ceiling, but reduced future risk and scrutiny growth. Sustainable operations.</div>
+                </button>
+                <button class="fork-btn" onclick="chooseFork('expansion')">
+                    <div class="fork-btn-title">Expansion Path</div>
+                    <div class="fork-btn-desc">Higher profit potential, but amplified penalties for risky behavior. High stakes.</div>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="intro-overlay show" id="intro-overlay">
+        <div class="intro-content">
+            <h2>Welcome to Wuhan Wet Market</h2>
+            <p>You run a market in an unnamed port city. Balance profit, risk, and reputation as you navigate daily operations under growing pressure.</p>
+            
+            <h3>How to Play</h3>
+            <p>Each day, you make three decisions:</p>
+            <ul>
+                <li><span class="highlight">Stock Level:</span> Low, Medium, or High inventory</li>
+                <li><span class="highlight">Sanitation Spend:</span> Cheap, Standard, or Strict measures</li>
+                <li><span class="highlight">Market Posture:</span> Profit-first, Balanced, or Safety-first approach</li>
+            </ul>
+            <p>After selecting your decisions, press <span class="highlight">RUN DAY</span> to process the day and see results.</p>
+
+            <h3>Win Conditions</h3>
+            <p>To win, you must achieve all three by Day 15:</p>
+            <ul>
+                <li>Reach <span class="highlight">Day 15</span></li>
+                <li>Accumulate at least <span class="highlight">$10,000 cash</span></li>
+                <li>Keep <span class="highlight">Risk Status below Critical</span> (avoid catastrophic outbreaks)</li>
+            </ul>
+
+            <h3>Game Mechanics</h3>
+            <ul>
+                <li><span class="highlight">Cash:</span> Earn revenue from sales, pay costs for stock and sanitation</li>
+                <li><span class="highlight">Reputation:</span> Affects demand. Higher reputation = more customers</li>
+                <li><span class="highlight">Scrutiny:</span> Grows with risky behavior and low reputation. At 100, the market shuts down</li>
+                <li><span class="highlight">Risk Status:</span> Hidden disease risk shown as Contained → Unstable → Volatile → Critical. At Critical, game over</li>
+            </ul>
+
+            <h3>Important Notes</h3>
+            <ul>
+                <li>Between <span class="highlight">Days 6-8</span>, you'll face a critical decision: <span class="highlight">Reform Path</span> (safer, lower profit) or <span class="highlight">Expansion Path</span> (riskier, higher profit)</li>
+                <li>Repeated risky choices increase future penalties</li>
+                <li>Events are influenced by your past behavior</li>
+                <li>Scrutiny automatically increases after Day 10</li>
+            </ul>
+
+            <p class="warning-text">⚠️ The game saves automatically. Your progress persists between sessions.</p>
+
+            <button class="intro-close-btn" onclick="closeIntro()">Start Playing</button>
+        </div>
+    </div>
+
+    <div class="game-over" id="game-over">
+        <div class="game-over-content">
+            <h2 id="game-over-title">Game Over</h2>
+            <p id="game-over-message"></p>
+            <div class="ending-title" id="ending-title" style="display: none;"></div>
+            <div class="epilogue" id="epilogue" style="display: none;"></div>
+            <div class="action-buttons">
+                <button class="action-btn" onclick="shareScore()">Share Score</button>
+                <button class="action-btn secondary" onclick="newRun()">New Run</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let gameState = {
+            day: 1,
+            cash: 1000,
+            reputation: 50,
+            diseaseRisk: 15,
+            scrutiny: 10,
+            decisions: {
+                stock: 'medium',
+                sanitation: 'standard',
+                posture: 'balanced'
+            },
+            log: [],
+            // Hidden memory variables
+            riskStreak: 0,
+            scrutinySensitivity: 1.0,
+            marketHistoryFlags: [],
+            forkChoice: null,
+            totalProfitDays: 0,
+            totalSafetyDays: 0,
+            totalCheapSanitation: 0,
+            totalStrictSanitation: 0
+        };
+
+        function getDiseaseRiskTier(risk) {
+            if (risk < 30) return { name: 'Contained', class: 'warning', color: '#ffaa00' };
+            if (risk < 60) return { name: 'Unstable', class: 'unstable', color: '#ff8800' };
+            if (risk < 90) return { name: 'Volatile', class: 'volatile', color: '#ff4444' };
+            return { name: 'Critical', class: 'volatile', color: '#ff0000' };
+        }
+
+        function getContextualEvent() {
+            const events = [];
+            const state = gameState;
+
+            // Events influenced by past behavior
+            if (state.riskStreak >= 3) {
+                events.push({
+                    name: "Staff Warning",
+                    description: "Your workers quietly express concerns about conditions. They're getting nervous.",
+                    effects: { reputation: -5, scrutiny: 8 },
+                    riskModifier: 1.2
+                });
+            }
+
+            if (state.scrutiny > 50 && state.marketHistoryFlags.includes('knownForShortcuts')) {
+                events.push({
+                    name: "Targeted Inspection",
+                    description: "Inspectors arrive unannounced. Your reputation precedes you.",
+                    effects: { scrutiny: 15, reputation: -8 },
+                    costModifier: 1.3
+                });
+            }
+
+            if (state.totalProfitDays > state.totalSafetyDays * 2 && state.day > 5) {
+                events.push({
+                    name: "Reputation Backlash",
+                    description: "Word spreads about your profit-first approach. Some customers stay away.",
+                    effects: { reputation: -12, demand: 0.85 }
+                });
+            }
+
+            if (state.totalStrictSanitation > state.totalCheapSanitation * 2) {
+                events.push({
+                    name: "Trust Dividend",
+                    description: "Your consistent safety measures have built customer confidence.",
+                    effects: { reputation: 8, scrutiny: -5 },
+                    demand: 1.15
+                });
+            }
+
+            if (state.scrutiny > 40 && !state.marketHistoryFlags.includes('quietWarning')) {
+                events.push({
+                    name: "Quiet Warning",
+                    description: "A friendly contact warns you that authorities are watching. Time to be careful.",
+                    effects: { scrutiny: 5 },
+                    scrutinySensitivity: 1.5
+                });
+                state.marketHistoryFlags.push('quietWarning');
+            }
+
+            if (state.cash > 5000 && state.diseaseRisk < 40) {
+                events.push({
+                    name: "Sudden Demand Surge",
+                    description: "A major buyer arrives with a large order. High profit, but requires risky stock levels.",
+                    effects: { cash: 300, diseaseRisk: 12 },
+                    demand: 1.4
+                });
+            }
+
+            if (state.day > 10 && state.diseaseRisk > 50) {
+                events.push({
+                    name: "Temporary Immunity",
+                    description: "A brief period of calm. But you sense this won't last if conditions don't improve.",
+                    effects: { diseaseRisk: -10 },
+                    futureRiskPenalty: 1.3
+                });
+            }
+
+            // Default events if no contextual ones match
+            const defaultEvents = [
+                {
+                    name: "Influencer Visit",
+                    description: "A popular collector's social media post drives demand.",
+                    effects: { demand: 1.3, scrutiny: 8 }
+                },
+                {
+                    name: "Rainy Day",
+                    description: "Heavy rain keeps customers away but reduces airborne risks.",
+                    effects: { demand: 0.75, diseaseRisk: -3 }
+                },
+                {
+                    name: "Supply Chain Issue",
+                    description: "Delayed shipments affect inventory levels.",
+                    effects: { costModifier: 1.15 }
+                },
+                {
+                    name: "Market Festival",
+                    description: "A local celebration brings extra foot traffic.",
+                    effects: { demand: 1.2, reputation: 3 }
+                },
+                {
+                    name: "Media Attention",
+                    description: "A documentary crew visits, increasing visibility.",
+                    effects: { reputation: 5, scrutiny: 10 }
+                }
+            ];
+
+            // Combine contextual and default events
+            const allEvents = [...events, ...defaultEvents];
+            return allEvents[Math.floor(Math.random() * allEvents.length)];
+        }
+
+        function loadGame() {
+            const saved = localStorage.getItem('wuhanWetMarketGame');
+            if (saved) {
+                try {
+                    gameState = JSON.parse(saved);
+                    updateDisplay();
+                } catch (e) {
+                    console.error('Failed to load game:', e);
+                }
+            }
+        }
+
+        function saveGame() {
+            localStorage.setItem('wuhanWetMarketGame', JSON.stringify(gameState));
+        }
+
+        function newRun() {
+            gameState = {
+                day: 1,
+                cash: 1000,
+                reputation: 50,
+                diseaseRisk: 15,
+                scrutiny: 10,
+                decisions: {
+                    stock: 'medium',
+                    sanitation: 'standard',
+                    posture: 'balanced'
+                },
+                log: [],
+                riskStreak: 0,
+                scrutinySensitivity: 1.0,
+                marketHistoryFlags: [],
+                forkChoice: null,
+                totalProfitDays: 0,
+                totalSafetyDays: 0,
+                totalCheapSanitation: 0,
+                totalStrictSanitation: 0
+            };
+            document.getElementById('game-over').classList.remove('show');
+            document.getElementById('fork-overlay').classList.remove('show');
+            document.getElementById('breakdown').classList.remove('show');
+            updateDisplay();
+            saveGame();
+        }
+
+        function selectDecision(group, value) {
+            gameState.decisions[group] = value;
+            document.querySelectorAll(`[data-group="${group}"]`).forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.querySelector(`[data-group="${group}"][data-value="${value}"]`).classList.add('active');
+        }
+
+        function updateDisplay() {
+            document.getElementById('value-day').textContent = gameState.day;
+            document.getElementById('value-cash').textContent = Math.floor(gameState.cash);
+            document.getElementById('value-reputation').textContent = Math.floor(gameState.reputation);
+            document.getElementById('value-scrutiny').textContent = Math.floor(gameState.scrutiny);
+
+            const riskTier = getDiseaseRiskTier(gameState.diseaseRisk);
+            const riskEl = document.getElementById('value-diseaseRisk');
+            riskEl.textContent = riskTier.name;
+            riskEl.className = `stat-value ${riskTier.class}`;
+            riskEl.style.color = riskTier.color;
+
+            // Update warning box
+            const warningBox = document.getElementById('warning-box');
+            if (gameState.diseaseRisk >= 90) {
+                warningBox.textContent = 'CRITICAL: Risk status is critical. Catastrophic failure imminent.';
+                warningBox.className = 'warning-box volatile';
+            } else if (gameState.diseaseRisk >= 60) {
+                warningBox.textContent = 'WARNING: Risk status is volatile. Extreme caution required.';
+                warningBox.className = 'warning-box volatile';
+            } else if (gameState.diseaseRisk >= 30) {
+                warningBox.textContent = 'CAUTION: Risk status is unstable. Monitor conditions closely.';
+                warningBox.className = 'warning-box unstable';
+            } else {
+                warningBox.textContent = `Risk status: ${riskTier.name}. Operations normal.`;
+                warningBox.className = 'warning-box';
+            }
+
+            // Update win condition display
+            const dayStatus = document.getElementById('win-day-status');
+            const cashStatus = document.getElementById('win-cash-status');
+            const riskStatus = document.getElementById('win-risk-status');
+            
+            const dayMet = gameState.day >= 15;
+            const cashMet = gameState.cash >= 10000;
+            const riskMet = gameState.diseaseRisk < 100;
+            
+            dayStatus.textContent = `Day ${gameState.day} / 15`;
+            dayStatus.className = `win-condition-status ${dayMet ? 'met' : 'progress'}`;
+            
+            const cashFormatted = Math.floor(gameState.cash).toLocaleString();
+            cashStatus.textContent = `$${cashFormatted} / $10,000`;
+            cashStatus.className = `win-condition-status ${cashMet ? 'met' : 'progress'}`;
+            
+            riskStatus.textContent = riskTier.name;
+            riskStatus.className = `win-condition-status ${riskMet ? 'met' : 'not-met'}`;
+
+            // Update decision buttons
+            Object.keys(gameState.decisions).forEach(group => {
+                const value = gameState.decisions[group];
+                document.querySelectorAll(`[data-group="${group}"]`).forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                const activeBtn = document.querySelector(`[data-group="${group}"][data-value="${value}"]`);
+                if (activeBtn) activeBtn.classList.add('active');
+            });
+
+            // Update log
+            const logEntries = document.getElementById('log-entries');
+            logEntries.innerHTML = '';
+            gameState.log.slice(-30).forEach(entry => {
+                const div = document.createElement('div');
+                div.className = `log-entry ${entry.type || ''}`;
+                div.textContent = entry.text;
+                logEntries.appendChild(div);
+            });
+            logEntries.scrollTop = logEntries.scrollHeight;
+        }
+
+        function addLogEntry(text, type = '') {
+            gameState.log.push({ text, type });
+            if (gameState.log.length > 30) {
+                gameState.log.shift();
+            }
+        }
+
+        function animateStat(statId) {
+            const card = document.getElementById(`stat-${statId}`);
+            card.classList.add('pulse');
+            setTimeout(() => card.classList.remove('pulse'), 500);
+        }
+
+        function chooseFork(choice) {
+            gameState.forkChoice = choice;
+            document.getElementById('fork-overlay').classList.remove('show');
+            addLogEntry(`You chose the ${choice === 'reform' ? 'Reform' : 'Expansion'} Path. This decision will shape your future.`, 'event');
+            saveGame();
+        }
+
+        function runDay() {
+            // Check for mid-run fork
+            if (!gameState.forkChoice && gameState.day >= 6 && gameState.day <= 8) {
+                document.getElementById('fork-overlay').classList.add('show');
+                return;
+            }
+
+            const breakdown = document.getElementById('breakdown');
+            breakdown.classList.remove('show');
+
+            // Track decision patterns
+            if (gameState.decisions.posture === 'profit') gameState.totalProfitDays++;
+            if (gameState.decisions.posture === 'safety') gameState.totalSafetyDays++;
+            if (gameState.decisions.sanitation === 'cheap') gameState.totalCheapSanitation++;
+            if (gameState.decisions.sanitation === 'strict') gameState.totalStrictSanitation++;
+
+            // Check for risky behavior streak
+            const isRisky = gameState.decisions.stock === 'high' && 
+                           (gameState.decisions.sanitation === 'cheap' || gameState.decisions.posture === 'profit');
+            if (isRisky) {
+                gameState.riskStreak++;
+                if (!gameState.marketHistoryFlags.includes('knownForShortcuts')) {
+                    gameState.marketHistoryFlags.push('knownForShortcuts');
+                }
+            } else {
+                gameState.riskStreak = Math.max(0, gameState.riskStreak - 1);
+            }
+
+            // Calculate revenue
+            const stockMultipliers = { low: 0.6, medium: 1.0, high: 1.4 };
+            const baseUnits = stockMultipliers[gameState.decisions.stock] * 100;
+            
+            const demandRoll = 0.75 + Math.random() * 0.5;
+            const reputationBonus = (gameState.reputation - 50) / 150;
+            let demand = demandRoll + reputationBonus;
+            
+            // Fork effects on revenue
+            if (gameState.forkChoice === 'reform') {
+                demand *= 0.9; // Lower profit ceiling
+            } else if (gameState.forkChoice === 'expansion') {
+                demand *= 1.15; // Higher profit ceiling
+            }
+            
+            if (gameState.decisions.posture === 'profit') {
+                demand *= 1.25;
+            } else if (gameState.decisions.posture === 'safety') {
+                demand *= 0.8;
+            }
+
+            let revenue = baseUnits * demand;
+
+            // Get contextual event
+            const event = getContextualEvent();
+            let eventApplied = false;
+            if (!event.condition || (event.condition && event.condition(gameState))) {
+                eventApplied = true;
+                if (event.effects) {
+                    if (event.effects.demand) revenue *= event.effects.demand;
+                    if (event.effects.cash) gameState.cash += event.effects.cash;
+                    if (event.effects.reputation) gameState.reputation += event.effects.reputation;
+                    if (event.effects.diseaseRisk) gameState.diseaseRisk += event.effects.diseaseRisk;
+                    if (event.effects.scrutiny) gameState.scrutiny += event.effects.scrutiny;
+                }
+                if (event.scrutinySensitivity) {
+                    gameState.scrutinySensitivity = event.scrutinySensitivity;
+                }
+                if (event.futureRiskPenalty) {
+                    gameState.marketHistoryFlags.push('futureRiskPenalty');
+                }
+                addLogEntry(`Day ${gameState.day}: ${event.description}`, 'event');
+            }
+
+            revenue = Math.floor(revenue);
+
+            // Calculate costs
+            const stockCosts = { low: 200, medium: 400, high: 700 };
+            const sanitationCosts = { cheap: 50, standard: 150, strict: 300 };
+            
+            let costs = stockCosts[gameState.decisions.stock] + sanitationCosts[gameState.decisions.sanitation];
+            
+            if (event.effects && event.effects.costModifier) {
+                costs *= event.effects.costModifier;
+            }
+
+            costs = Math.floor(costs);
+
+            // Update cash
+            const oldCash = gameState.cash;
+            gameState.cash += revenue - costs;
+            const cashChange = gameState.cash - oldCash;
+
+            // Update reputation
+            const oldReputation = gameState.reputation;
+            let repChange = 0;
+            
+            if (gameState.decisions.sanitation === 'strict') repChange += 4;
+            if (gameState.decisions.sanitation === 'cheap') repChange -= 3;
+            
+            if (gameState.decisions.posture === 'safety') repChange += 3;
+            if (gameState.decisions.posture === 'profit') repChange -= 3;
+
+            // Random reputation fluctuation
+            repChange += (Math.random() - 0.5) * 5;
+
+            gameState.reputation += repChange;
+            gameState.reputation = Math.max(0, Math.min(100, gameState.reputation));
+
+            // Update disease risk (nonlinear growth)
+            const oldDiseaseRisk = gameState.diseaseRisk;
+            let diseaseChange = 0;
+
+            if (gameState.decisions.stock === 'high') diseaseChange += 10;
+            if (gameState.decisions.stock === 'low') diseaseChange -= 3;
+
+            if (gameState.decisions.sanitation === 'cheap') diseaseChange += 12;
+            if (gameState.decisions.sanitation === 'strict') diseaseChange -= 4;
+
+            if (gameState.decisions.posture === 'safety') diseaseChange -= 3;
+            if (gameState.decisions.posture === 'profit') diseaseChange += 5;
+
+            // Streak pressure (nonlinear)
+            if (isRisky) {
+                diseaseChange += gameState.riskStreak * 3;
+            }
+
+            // Fork effects on risk
+            if (gameState.forkChoice === 'reform') {
+                diseaseChange *= 0.7; // Reduced risk growth
+            } else if (gameState.forkChoice === 'expansion') {
+                diseaseChange *= 1.4; // Amplified penalties
+            }
+
+            // Future risk penalty from events
+            if (gameState.marketHistoryFlags.includes('futureRiskPenalty')) {
+                diseaseChange *= 1.2;
+            }
+
+            // Nonlinear scaling based on current risk
+            if (gameState.diseaseRisk > 50) {
+                diseaseChange *= 1.3; // Risk grows faster when already high
+            }
+            if (gameState.diseaseRisk > 75) {
+                diseaseChange *= 1.5; // Even faster when critical
+            }
+
+            // Random factor
+            diseaseChange += (Math.random() - 0.5) * 8;
+
+            gameState.diseaseRisk += diseaseChange;
+            gameState.diseaseRisk = Math.max(0, Math.min(100, gameState.diseaseRisk));
+
+            // Update scrutiny
+            const oldScrutiny = gameState.scrutiny;
+            let scrutinyChange = 0;
+
+            if (gameState.reputation < oldReputation) {
+                scrutinyChange += (oldReputation - gameState.reputation) / 2;
+            }
+
+            if (gameState.diseaseRisk > oldDiseaseRisk) {
+                scrutinyChange += (gameState.diseaseRisk - oldDiseaseRisk) / 4;
+            }
+
+            if (gameState.decisions.sanitation === 'strict' && gameState.reputation > 60) {
+                scrutinyChange -= 4;
+            }
+
+            // Late-game automatic scrutiny growth
+            if (gameState.day > 10) {
+                scrutinyChange += 1 + (gameState.day - 10) * 0.5;
+            }
+
+            // Scrutiny sensitivity multiplier
+            scrutinyChange *= gameState.scrutinySensitivity;
+
+            // Fork effects on scrutiny
+            if (gameState.forkChoice === 'reform') {
+                scrutinyChange *= 0.8;
+            } else if (gameState.forkChoice === 'expansion') {
+                scrutinyChange *= 1.3;
+            }
+
+            // Random scrutiny fluctuation
+            scrutinyChange += (Math.random() - 0.5) * 4;
+
+            gameState.scrutiny += scrutinyChange;
+            gameState.scrutiny = Math.max(0, Math.min(100, gameState.scrutiny));
+
+            // Add log entries
+            if (!eventApplied) {
+                addLogEntry(`Day ${gameState.day}: Business as usual.`, 'day');
+            }
+            
+            addLogEntry(`Revenue: ${revenue} | Costs: ${costs} | Net: ${cashChange > 0 ? '+' : ''}${cashChange}`, 'stat-change');
+
+            // Show breakdown
+            document.getElementById('breakdown-revenue').textContent = `+${revenue}`;
+            document.getElementById('breakdown-revenue').className = 'breakdown-value positive';
+            document.getElementById('breakdown-costs').textContent = `-${costs}`;
+            document.getElementById('breakdown-costs').className = 'breakdown-value negative';
+            document.getElementById('breakdown-net').textContent = `${cashChange > 0 ? '+' : ''}${cashChange}`;
+            document.getElementById('breakdown-net').className = `breakdown-value ${cashChange >= 0 ? 'positive' : 'negative'}`;
+            document.getElementById('breakdown-reputation').textContent = `${repChange > 0 ? '+' : ''}${Math.floor(repChange)}`;
+            document.getElementById('breakdown-reputation').className = `breakdown-value ${repChange >= 0 ? 'positive' : 'negative'}`;
+            document.getElementById('breakdown-scrutiny').textContent = `${scrutinyChange > 0 ? '+' : ''}${Math.floor(scrutinyChange)}`;
+            document.getElementById('breakdown-scrutiny').className = `breakdown-value ${scrutinyChange >= 0 ? 'negative' : 'positive'}`;
+
+            breakdown.classList.add('show');
+
+            // Animate stat changes
+            if (Math.abs(cashChange) > 0) animateStat('cash');
+            if (Math.abs(repChange) > 0.5) animateStat('reputation');
+            if (Math.abs(diseaseChange) > 0.5) animateStat('diseaseRisk');
+            if (Math.abs(scrutinyChange) > 0.5) animateStat('scrutiny');
+
+            // Advance day
+            gameState.day++;
+
+            // Check win/lose conditions
+            if (gameState.diseaseRisk >= 100) {
+                endGame('Catastrophic Outbreak', 'A catastrophic disease outbreak has forced immediate closure. The market is shut down indefinitely by authorities.');
+            } else if (gameState.cash < 0) {
+                endGame('Bankruptcy', 'You have run out of funds. The market closes its doors for good.');
+            } else if (gameState.scrutiny >= 100) {
+                endGame('Government Shutdown', 'Regulatory scrutiny has reached critical levels. The market has been permanently closed by authorities.');
+            } else if (gameState.day >= 15 && gameState.cash >= 10000 && gameState.diseaseRisk < 100) {
+                const { title, epilogue } = getEnding();
+                endGame('Victory', `You have successfully operated the market for ${gameState.day - 1} days with ${Math.floor(gameState.cash)} cash.`, title, epilogue);
+            }
+
+            updateDisplay();
+            saveGame();
+        }
+
+        function getEnding() {
+            const state = gameState;
+            const riskTier = getDiseaseRiskTier(state.diseaseRisk);
+            
+            // Strategy-based endings
+            if (state.forkChoice === 'reform' && state.reputation >= 70 && state.diseaseRisk < 40) {
+                return {
+                    title: 'Model Operator',
+                    epilogue: 'You chose sustainability over greed. Your market became a benchmark for responsible operations, though profits remained modest.'
+                };
+            }
+            
+            if (state.forkChoice === 'expansion' && state.cash >= 15000 && state.diseaseRisk >= 50) {
+                return {
+                    title: 'Infamous Legend',
+                    epilogue: 'You pushed boundaries and maximized profit. Your market became notorious, but you walked away wealthy despite the risks.'
+                };
+            }
+            
+            if (state.totalSafetyDays > state.totalProfitDays * 2 && state.totalStrictSanitation > state.totalCheapSanitation * 2) {
+                return {
+                    title: 'Prudent Manager',
+                    epilogue: 'You prioritized safety and reputation. Your cautious approach kept the market stable, though growth was slow.'
+                };
+            }
+            
+            if (state.totalProfitDays > state.totalSafetyDays * 2 && state.riskStreak > 5) {
+                return {
+                    title: 'Risky Gambler',
+                    epilogue: 'You consistently chose profit over safety. You survived, but your market\'s reputation was built on a foundation of risk.'
+                };
+            }
+            
+            if (state.forkChoice === 'reform' && state.cash >= 12000) {
+                return {
+                    title: 'Balanced Success',
+                    epilogue: 'You found a sustainable path that balanced profit and safety. Your market thrived without cutting dangerous corners.'
+                };
+            }
+            
+            if (state.forkChoice === 'expansion' && state.diseaseRisk < 40) {
+                return {
+                    title: 'Lucky Expansionist',
+                    epilogue: 'You chose expansion and somehow avoided the worst consequences. Fortune favored your risky strategy.'
+                };
+            }
+            
+            // Default endings
+            if (state.cash >= 12000) {
+                return {
+                    title: 'Survivor Operator',
+                    epilogue: 'You navigated the challenges and kept the market running. Not spectacular, but you survived.'
+                };
+            }
+            
+            return {
+                title: 'Marginal Operator',
+                epilogue: 'You barely made it through. The market stayed open, but just barely. Perhaps a different strategy would have served you better.'
+            };
+        }
+
+        function endGame(title, message, endingTitle = null, epilogue = null) {
+            document.getElementById('game-over-title').textContent = title;
+            document.getElementById('game-over-message').textContent = message;
+            
+            const endingTitleEl = document.getElementById('ending-title');
+            const epilogueEl = document.getElementById('epilogue');
+            
+            if (endingTitle) {
+                endingTitleEl.textContent = endingTitle;
+                endingTitleEl.style.display = 'block';
+            } else {
+                endingTitleEl.style.display = 'none';
+            }
+            
+            if (epilogue) {
+                epilogueEl.textContent = epilogue;
+                epilogueEl.style.display = 'block';
+            } else {
+                epilogueEl.style.display = 'none';
+            }
+            
+            document.getElementById('game-over').classList.add('show');
+        }
+
+        function shareScore() {
+            const endingTitle = document.getElementById('ending-title').textContent || 'Game Over';
+            const riskTier = getDiseaseRiskTier(gameState.diseaseRisk);
+            const summary = `Wuhan Wet Market - ${endingTitle}
+Days Survived: ${gameState.day - 1}
+Final Cash: ${Math.floor(gameState.cash)}
+Reputation: ${Math.floor(gameState.reputation)}
+Risk Status: ${riskTier.name}
+Scrutiny: ${Math.floor(gameState.scrutiny)}
+Path: ${gameState.forkChoice ? (gameState.forkChoice === 'reform' ? 'Reform' : 'Expansion') : 'None'}`;
+
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(summary).then(() => {
+                    alert('Score copied to clipboard!');
+                }).catch(() => {
+                    prompt('Copy this score:', summary);
+                });
+            } else {
+                prompt('Copy this score:', summary);
+            }
+        }
+
+        function showIntro() {
+            document.getElementById('intro-overlay').classList.add('show');
+            // Disable all game interactions
+            const runBtn = document.querySelector('.run-day-btn');
+            const decisionBtns = document.querySelectorAll('.decision-btn');
+            const newRunBtn = document.querySelector('.new-run-btn');
+            if (runBtn) runBtn.disabled = true;
+            decisionBtns.forEach(btn => btn.disabled = true);
+            if (newRunBtn) newRunBtn.disabled = true;
+        }
+
+        function closeIntro() {
+            document.getElementById('intro-overlay').classList.remove('show');
+            // Re-enable all game interactions
+            const runBtn = document.querySelector('.run-day-btn');
+            const decisionBtns = document.querySelectorAll('.decision-btn');
+            const newRunBtn = document.querySelector('.new-run-btn');
+            if (runBtn) runBtn.disabled = false;
+            decisionBtns.forEach(btn => btn.disabled = false);
+            if (newRunBtn) newRunBtn.disabled = false;
+        }
+
+        // Initialize
+        loadGame();
+        updateDisplay();
+        
+        // Always show intro screen on load - unavoidable
+        // Buttons are disabled by default when intro is showing
+        showIntro();
+    </script>
+</body>
+</html>
