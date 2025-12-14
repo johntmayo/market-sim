@@ -63,6 +63,37 @@
             font-style: italic;
         }
 
+        .pangolin {
+            position: absolute;
+            bottom: 1rem;
+            right: 1rem;
+            width: 80px;
+            height: 80px;
+            z-index: 1;
+            opacity: 0.8;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-10px) rotate(5deg); }
+        }
+
+        .pangolin svg {
+            width: 100%;
+            height: 100%;
+            filter: drop-shadow(0 0 10px rgba(0, 255, 255, 0.3));
+        }
+
+        @media (max-width: 600px) {
+            .pangolin {
+                width: 60px;
+                height: 60px;
+                bottom: 0.5rem;
+                right: 0.5rem;
+            }
+        }
+
         .container {
             max-width: 600px;
             margin: 0 auto;
@@ -84,6 +115,22 @@
             text-align: center;
             position: relative;
             overflow: hidden;
+            transition: all 0.3s;
+        }
+
+        .stat-card.good {
+            border-color: #00ff88;
+            background: #1a2a1a;
+        }
+
+        .stat-card.warning {
+            border-color: #ffaa00;
+            background: #2a2a1a;
+        }
+
+        .stat-card.danger {
+            border-color: #ff4444;
+            background: #2a1a1a;
         }
 
         .stat-card.pulse {
@@ -684,6 +731,33 @@
     <div class="cover">
         <h1>WUHAN WET MARKET</h1>
         <p>Port City • Turn-Based Management</p>
+        <div class="pangolin">
+            <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                <!-- Pangolin body -->
+                <ellipse cx="50" cy="60" rx="35" ry="25" fill="#8B7355" stroke="#6B5D45" stroke-width="2"/>
+                <!-- Scales pattern -->
+                <ellipse cx="40" cy="55" rx="8" ry="6" fill="#A0826D"/>
+                <ellipse cx="50" cy="52" rx="8" ry="6" fill="#A0826D"/>
+                <ellipse cx="60" cy="55" rx="8" ry="6" fill="#A0826D"/>
+                <ellipse cx="45" cy="65" rx="8" ry="6" fill="#A0826D"/>
+                <ellipse cx="55" cy="65" rx="8" ry="6" fill="#A0826D"/>
+                <!-- Head -->
+                <ellipse cx="50" cy="35" rx="20" ry="18" fill="#8B7355" stroke="#6B5D45" stroke-width="2"/>
+                <!-- Snout -->
+                <ellipse cx="50" cy="28" rx="8" ry="6" fill="#6B5D45"/>
+                <!-- Eyes -->
+                <circle cx="45" cy="32" r="2" fill="#00ffff"/>
+                <circle cx="55" cy="32" r="2" fill="#00ffff"/>
+                <!-- Smile -->
+                <path d="M 45 38 Q 50 42 55 38" stroke="#6B5D45" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+                <!-- Tail -->
+                <ellipse cx="20" cy="70" rx="12" ry="8" fill="#8B7355" stroke="#6B5D45" stroke-width="2"/>
+                <ellipse cx="15" cy="75" rx="8" ry="5" fill="#8B7355"/>
+                <!-- Legs -->
+                <ellipse cx="35" cy="80" rx="5" ry="8" fill="#6B5D45"/>
+                <ellipse cx="65" cy="80" rx="5" ry="8" fill="#6B5D45"/>
+            </svg>
+        </div>
     </div>
 
     <div class="container">
@@ -1066,6 +1140,34 @@
             riskEl.className = `stat-value ${riskTier.class}`;
             riskEl.style.color = riskTier.color;
 
+            // Visual feedback: color-code stat cards based on winning/losing states
+            const cashCard = document.getElementById('stat-cash');
+            const repCard = document.getElementById('stat-reputation');
+            const scrutinyCard = document.getElementById('stat-scrutiny');
+            const riskCard = document.getElementById('stat-diseaseRisk');
+            
+            // Cash: good if above 5000, warning if below 2000, danger if below 0
+            cashCard.className = 'stat-card';
+            if (gameState.cash >= 5000) cashCard.classList.add('good');
+            else if (gameState.cash < 2000) cashCard.classList.add('warning');
+            if (gameState.cash < 0) cashCard.classList.add('danger');
+            
+            // Reputation: good if above 60, warning if below 30
+            repCard.className = 'stat-card';
+            if (gameState.reputation >= 60) repCard.classList.add('good');
+            else if (gameState.reputation < 30) repCard.classList.add('warning');
+            
+            // Scrutiny: warning if above 50, danger if above 75
+            scrutinyCard.className = 'stat-card';
+            if (gameState.scrutiny >= 75) scrutinyCard.classList.add('danger');
+            else if (gameState.scrutiny >= 50) scrutinyCard.classList.add('warning');
+            
+            // Risk: use risk tier
+            riskCard.className = 'stat-card';
+            if (gameState.diseaseRisk >= 75) riskCard.classList.add('danger');
+            else if (gameState.diseaseRisk >= 50) riskCard.classList.add('warning');
+            else if (gameState.diseaseRisk < 30) riskCard.classList.add('good');
+
             // Update warning box
             const warningBox = document.getElementById('warning-box');
             if (gameState.diseaseRisk >= 90) {
@@ -1172,12 +1274,18 @@
             }
 
             // Calculate revenue
-            const stockMultipliers = { low: 0.6, medium: 1.0, high: 1.4 };
-            const baseUnits = stockMultipliers[gameState.decisions.stock] * 100;
+            const stockMultipliers = { low: 0.7, medium: 1.0, high: 1.5 };
+            // Increased base revenue significantly to make game more survivable
+            const baseUnits = stockMultipliers[gameState.decisions.stock] * 200;
             
-            const demandRoll = 0.75 + Math.random() * 0.5;
-            const reputationBonus = (gameState.reputation - 50) / 150;
+            const demandRoll = 0.85 + Math.random() * 0.3; // More consistent demand
+            const reputationBonus = (gameState.reputation - 50) / 100; // Stronger reputation effect
             let demand = demandRoll + reputationBonus;
+            
+            // Early game boost (days 1-5 are easier)
+            if (gameState.day <= 5) {
+                demand *= 1.2; // 20% revenue boost in early days
+            }
             
             // Fork effects on revenue
             if (gameState.forkChoice === 'reform') {
@@ -1218,10 +1326,15 @@
             revenue = Math.floor(revenue);
 
             // Calculate costs
-            const stockCosts = { low: 200, medium: 400, high: 700 };
-            const sanitationCosts = { cheap: 50, standard: 150, strict: 300 };
+            const stockCosts = { low: 150, medium: 300, high: 550 }; // Reduced costs
+            const sanitationCosts = { cheap: 40, standard: 120, strict: 250 }; // Reduced costs
             
             let costs = stockCosts[gameState.decisions.stock] + sanitationCosts[gameState.decisions.sanitation];
+            
+            // Early game cost reduction (days 1-5)
+            if (gameState.day <= 5) {
+                costs *= 0.85; // 15% cost reduction in early days
+            }
             
             if (event.effects && event.effects.costModifier) {
                 costs *= event.effects.costModifier;
@@ -1254,18 +1367,24 @@
             const oldDiseaseRisk = gameState.diseaseRisk;
             let diseaseChange = 0;
 
-            if (gameState.decisions.stock === 'high') diseaseChange += 10;
-            if (gameState.decisions.stock === 'low') diseaseChange -= 3;
+            // Reduced disease risk changes
+            if (gameState.decisions.stock === 'high') diseaseChange += 6; // Reduced from 10
+            if (gameState.decisions.stock === 'low') diseaseChange -= 4; // Increased benefit
 
-            if (gameState.decisions.sanitation === 'cheap') diseaseChange += 12;
-            if (gameState.decisions.sanitation === 'strict') diseaseChange -= 4;
+            if (gameState.decisions.sanitation === 'cheap') diseaseChange += 8; // Reduced from 12
+            if (gameState.decisions.sanitation === 'strict') diseaseChange -= 5; // Increased benefit
 
-            if (gameState.decisions.posture === 'safety') diseaseChange -= 3;
-            if (gameState.decisions.posture === 'profit') diseaseChange += 5;
+            if (gameState.decisions.posture === 'safety') diseaseChange -= 4; // Increased benefit
+            if (gameState.decisions.posture === 'profit') diseaseChange += 3; // Reduced from 5
 
             // Streak pressure (nonlinear)
             if (isRisky) {
-                diseaseChange += gameState.riskStreak * 3;
+                diseaseChange += gameState.riskStreak * 2; // Reduced from 3
+            }
+            
+            // Early game protection (days 1-5 have slower risk growth)
+            if (gameState.day <= 5) {
+                diseaseChange *= 0.5; // 50% slower risk growth in early days
             }
 
             // Fork effects on risk
@@ -1288,8 +1407,9 @@
                 diseaseChange *= 1.5; // Even faster when critical
             }
 
-            // Random factor
-            diseaseChange += (Math.random() - 0.5) * 8;
+            // Random factor (reduced in early game)
+            const randomFactor = gameState.day <= 5 ? 4 : 8; // Less random variation early
+            diseaseChange += (Math.random() - 0.5) * randomFactor;
 
             gameState.diseaseRisk += diseaseChange;
             gameState.diseaseRisk = Math.max(0, Math.min(100, gameState.diseaseRisk));
